@@ -1027,15 +1027,15 @@ public class TreeFinder extends TreeScanner<Void, List<Insertion>> {
       if (i.isInserted()) {
         // Skip this insertion if it has already been inserted. See
         // the ReceiverInsertion class for details.
-        dbug.debug("  ... already inserted%n");
+        dbug.debug("  ... insertion already inserted%n");
         it.remove();
         continue;
       }
       if (!i.getCriteria().isSatisfiedBy(path, node)) {
-        dbug.debug("  ... not satisfied%n");
+        dbug.debug("  ... insertion not satisfied%n");
         continue;
       } else {
-        dbug.debug("  ... satisfied!%n");
+        dbug.debug("  ... insertion satisfied!%n");
         dbug.debug("    At tree: %s%n", Main.firstLine(node.toString()));
         dbug.debug("    Tree info: %s%n", node.getClass());
 
@@ -1725,7 +1725,7 @@ public class TreeFinder extends TreeScanner<Void, List<Insertion>> {
     DeclaredType staticType = null;
     // For an inner class constructor, the receiver comes from the
     // superclass, so skip past the first type definition.
-    // In JDK 11, the constructor's return type is null; in JDK 16, the return type is void.
+    // In JDK 11, the constructor's return type is null; in JDK 17, the return type is void.
     boolean isCon = ((MethodTree) leaf).getName().contentEquals("<init>");
 
     boolean skip = isCon;

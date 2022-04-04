@@ -3,7 +3,7 @@ import java.nio.file.Files
 
 plugins {
     // https://plugins.gradle.org/plugin/com.github.johnrengelman.shadow
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java'
 
     id("net.ltgt.errorprone") version "2.0.2"
@@ -15,7 +15,7 @@ apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 group 'org.checkerframework'
-version '3.18.0'
+version '3.21.4'
 
 sourceCompatibility = 1.8
 
@@ -62,7 +62,7 @@ dependencies {
         implementation "com.google.errorprone:javac:$errorproneJavacVersion"
         errorproneJavac("com.google.errorprone:javac:$errorproneJavacVersion")
     }
-    implementation 'org.plumelib:bcel-util:1.1.13'
+    implementation 'org.plumelib:bcel-util:1.1.14'
     if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
         implementation 'org.plumelib:options:2.0.0'
     } else {
@@ -72,8 +72,10 @@ dependencies {
     implementation 'org.plumelib:plume-util:1.5.8'
     implementation 'org.plumelib:reflection-util:1.0.4'
     // Annotations in checker-qual.jar are used, but no checkers are (currently) run on the code.
-    compileOnly 'org.checkerframework:checker-qual:3.17.0'
-    implementation 'com.google.errorprone:error_prone_annotations:2.9.0'
+    compileOnly 'org.checkerframework:checker-qual:3.21.3'
+    ext.errorproneVersion = '2.11.0'
+    // TODO: it's a bug that annotatedlib:guava requires the error_prone_annotations dependency.
+    implementation "com.google.errorprone:error_prone_annotations:${errorproneVersion}"
     implementation ('org.checkerframework.annotatedlib:guava:30.1.1-jre') {
         // So long as Guava only uses annotations from checker-qual, excluding it should not cause problems.
         exclude group: 'org.checkerframework'
@@ -81,11 +83,16 @@ dependencies {
     implementation 'org.ow2.asm:asm:9.2'
 
     testImplementation group: 'junit', name: 'junit', version: '4.13.2'
-    testImplementation 'org.checkerframework:checker-qual:3.16.0'
+    testImplementation 'org.checkerframework:checker-qual:3.21.2'
 
-    errorprone("com.google.errorprone:error_prone_core:2.9.0")
+    errorprone("com.google.errorprone:error_prone_core:${errorproneVersion}")
 }
 
+tasks.withType(JavaCompile) { compilationTask ->
+  if (compilationTask.name.startsWith('compile')) {
+    options.errorprone.enabled = !isJava8
+  }
+}
 
 compileJava {
     sourceCompatibility = 1.8
@@ -252,7 +259,7 @@ task cleanTestAnnotator(type: Exec) {
 ext.plumeBibHome = "${projectDir}/plume-bib"
 
 task getPlumeBib() {
-    description 'Obtain or update the run-google-java-format scripts.'
+    description 'Obtain or update the plume-bib repository.'
     if (file(plumeBibHome).exists()) {
         exec {
             workingDir plumeBibHome
@@ -731,7 +738,7 @@ task getCodeFormatScripts() {
         exec {
             workingDir "${formatScriptsHome}/../"
             executable 'git'
-            args = ['clone', '-q', '--depth', '1', 'https://github.com/plume-lib/run-google-java-format.git', '.run-google-java-format']
+            args = ['clone', '-q', '--depth', '1', 'https://github.com/eisop-plume-lib/run-google-java-format.git', '.run-google-java-format']
         }
     }
 }
@@ -774,6 +781,10 @@ task checkFormat(type: Exec, dependsOn: [getCodeFormatScripts, pythonIsInstalled
     executable 'python3'
 
     doFirst {
+        if (isJava8) {
+            println 'The checkFormat task cannot be run on Java 8.  Please use Java 11+.'
+            return
+        }
         args += "${formatScriptsHome}/check-google-java-format.py"
         args += getJavaFilesToFormat(project.name)
     }
