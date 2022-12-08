@@ -19,7 +19,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'com.diffplug.spotless'
 
 group 'io.github.eisop'
-version '3.28.0'
+version '3.28.0-eisop1'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
