@@ -1,11 +1,12 @@
 #!/bin/bash
+# Uses `bash` rather than `sh` because of use of [[ ... ]] for boolean tests.
 
 echo "Entering $(cd "$(dirname "$0")" && pwd -P)/$(basename "$0") in $(pwd)"
 
 # Optional argument $1 is one of:
 #   all, test, typecheck, misc, downstream
 # It defaults to "all".
-export GROUP=$1
+export GROUP="$1"
 if [[ "${GROUP}" == "" ]]; then
   export GROUP=all
 fi
@@ -70,6 +71,7 @@ if [[ "${GROUP}" == "downstream" || "${GROUP}" == "all" ]]; then
     # checker-framework and its downstream tests
 # NO-AFU
 #    /tmp/plume-scripts/git-clone-related eisop checker-framework
+#    (cd ../checker-framework/framework && (../gradlew --write-verification-metadata sha256 help --dry-run || (sleep 60 && ../gradlew --write-verification-metadata sha256 help --dry-run)))
 #    (cd ../checker-framework/framework && ../gradlew ainferTest)
 
     # /tmp/plume-scripts/git-clone-related eisop checker-framework-inference
