@@ -52,7 +52,7 @@
 
     <property name="newCfrValue" value="Annotation File Utilities v${release.ver}"/>
 
-    <property name="ClassFileReaderPath" value="${annotation-tools}/scene-lib/src/annotations/io/classfile/ClassFileReader.java"/>
+    <property name="ClassFileReaderPath" value="${annotation-tools}/annotation-file-utilities/src/main/java/org/checkerframework/afu/scenelib/io/classfile/ClassFileReader.java"/>
     <echo level="info" message="updating ${ClassFileReaderPath}"/>
     <replaceregexp file="${ClassFileReaderPath}" byline="true"
                    match="${afu.cfr.pattern}" replace="${newCfrValue}"/>
