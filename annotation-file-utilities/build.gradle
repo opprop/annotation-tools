@@ -39,7 +39,6 @@ repositories {
 // On a Java 8 JVM, use error-prone javac and source/target 8.
 // On a Java 9+ JVM, use the host javac, default source/target, and required module flags.
 ext.isJava8 = JavaVersion.current() == JavaVersion.VERSION_1_8
-ext.isJava11orHigher = JavaVersion.current() >= JavaVersion.VERSION_11
 
 ext {
     // The local git repository, typically in the .git directory, but not for worktrees.
