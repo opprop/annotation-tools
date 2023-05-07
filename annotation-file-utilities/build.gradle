@@ -27,10 +27,17 @@ apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 group 'io.github.eisop'
-version '3.32.0-eisop1'
+version '3.34.0'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+// This test is for whether the Checker Framework supports (runs under) Java 8.
+// Currently, the Checker Framework does support Java 8.
+if (true /* supports Java 8 */) {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+} else {
+    sourceCompatibility = 11
+    targetCompatibility = 11
+}
 
 repositories {
     mavenCentral()
@@ -89,18 +96,49 @@ tasks.withType(JavaCompile) { compilationTask ->
 }
 
 compileJava {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    if (true /* supports Java 8 */) {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    } else {
+        sourceCompatibility = 11
+        targetCompatibility = 11
+        options.compilerArgs += [
+            '--add-exports',
+            'jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
+            '--add-exports',
+            'jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
+            '--add-exports',
+            'jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED',
+            '--add-exports',
+            'jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
+            '--add-exports',
+            'jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED',
+            '--add-exports',
+            'jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED',
+            '--add-exports',
+            'jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED',
+            '--add-exports',
+            'jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+            '--add-exports',
+            'jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+        ]
+    }
     options.failOnError = true
     options.deprecation = true
-    options.compilerArgs += [
-        '-g',
-        '-Werror',
-        // To not get a warning about missing bootstrap classpath for Java 8.
-        "-Xlint:-options",
-        "-Xlint:unchecked",
-        "-Xlint",
-    ]
+    if (JavaVersion.current().compareTo(org.gradle.api.JavaVersion.VERSION_20) >= 0) {
+        // JDK 20 and later deprecate --target 8
+        options.compilerArgs += [
+            '-g',
+            '-Werror',
+            '-Xlint:all,-options',
+        ]
+    } else {
+        options.compilerArgs += [
+            '-g',
+            '-Werror',
+            '-Xlint',
+        ]
+    }
     options.encoding = 'UTF-8'
 
     options.errorprone.disable(
@@ -351,109 +389,6 @@ task cleanAnnotationFileFormat {
     }
 }
 
-// Copied from Checker Framework
-task checkBasicStyle(group: 'Format') {
-    description 'Check basic style guidelines.  Not related to Checkstyle tool.'
-
-    String[] ignoreDirectories = [
-        '.git',
-        '.gradle',
-        '.idea',
-        '.plume-scripts',
-        'annotated',
-        'api',
-        'plume-bib',
-        'build',
-        'jdk',
-        'javadoc',
-        "tests"
-    ]
-
-    String[] ignoreFilePatterns = [
-        '*.aux',
-        '*.class',
-        '*.dvi',
-        '*.eps',
-        '*.jaif',
-        '*.jar',
-        '*.jtr',
-        '*.log',
-        '*.patch',
-        '*.pdf',
-        '*.png',
-        '*.sty',
-        '*.zip',
-        '*~',
-        '*.goal',
-        '*.jaif',
-        'CFLogo.ai',
-        'logfile.log.rec.index',
-        'annotation-file-format.html',
-        'gradlew',
-    ]
-
-    doLast {
-        FileTree tree = fileTree(dir: "${projectDir}/../")
-        for (String dir : ignoreDirectories) {
-            tree.exclude "**/${dir}/**"
-        }
-        for (String file : ignoreFilePatterns) {
-            tree.exclude "**/${file}"
-        }
-        boolean failed = false
-        tree.visit {
-            if (!it.file.isDirectory()) {
-                int isBlankLine
-                it.file.eachLine { line ->
-                    if (line.endsWith(' ')) {
-                        println("Trailing whitespace: ${it.file.absolutePath}")
-                        failed = true
-                    }
-                    if (!line.startsWith('\\') &&
-                            (line.matches('^.* (else|finally|try)\\{}.*$')
-                            || line.matches('^.*}(catch|else|finally) .*$')
-                            || line.matches('^.* (catch|for|if|while)\\('))) {
-                        // This runs on non-java files, too.
-                        println("Missing space: ${it.file.absolutePath}")
-                        failed = true
-                    }
-                    if (line.isEmpty()) {
-                        isBlankLine++;
-                    } else {
-                        isBlankLine = 0;
-                    }
-                }
-
-                if (isBlankLine > 1) {
-                    println("Blank line at end of file: ${it.file.absolutePath}")
-                    failed = true
-                }
-
-                RandomAccessFile file
-                try {
-                    file = new RandomAccessFile(it.file, 'r')
-                    int end = file.length() - 1;
-                    if (end > 0) {
-                        file.seek(end)
-                        byte last = file.readByte()
-                        if (last != '\n') {
-                            println("Missing newline at end of file: ${it.file.absolutePath}")
-                            failed = true
-                        }
-                    }
-                } finally {
-                    if (file != null) {
-                        file.close()
-                    }
-                }
-            }
-        }
-        if (failed) {
-            throw new GradleException("Files do not meet basic style guidelines.")
-        }
-    }
-}
-
 /**
  * Creates a task that runs the checker on the main source set. The task is named
  * "check${shortName}", for example "checkPurity" or "checkNullness".
@@ -513,6 +448,34 @@ def createCheckTypeTask(checker, shortName) {
                 "jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED",
             ]
         }
+
+        if (true /* supports Java 8 */) {
+            sourceCompatibility = 1.8
+            targetCompatibility = 1.8
+        } else {
+            sourceCompatibility = 11
+            targetCompatibility = 11
+            options.compilerArgs += [
+                '--add-exports',
+                'jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED',
+                '--add-exports',
+                'jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
+                '--add-exports',
+                'jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED',
+                '--add-exports',
+                'jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
+                '--add-exports',
+                'jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED',
+                '--add-exports',
+                'jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED',
+                '--add-exports',
+                'jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED',
+                '--add-exports',
+                'jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+                '--add-exports',
+                'jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+            ]
+        }
     }
 }
 
@@ -541,7 +504,12 @@ test.dependsOn testAnnotator
 
 javadoc {
     options.memberLevel = JavadocMemberLevel.PUBLIC
-    options.addStringOption('source', '8')
+    if (true /* supports Java 8 */) {
+        options.addStringOption('source', '8')
+    } else {
+        options.addStringOption('source', '11')
+    }
+
     options.addStringOption('Xdoclint:all', '-quiet')
     options.addStringOption('Xmaxwarns', '10000')
     if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
@@ -786,9 +754,13 @@ compileJava.dependsOn installGitHooks
 if (!isJava8) {
     apply plugin: 'com.diffplug.spotless'
     spotless {
+
+        def doNotFormat = ['**/build/**',]
+
         format 'misc', {
             // define the files to apply `misc` to
-            target '*.md', '.gitignore'
+            target '*.md', '*.tex', '.gitignore', 'Makefile'
+            targetExclude doNotFormat
 
             // define the steps to apply to those files
             trimTrailingWhitespace()
