@@ -16,7 +16,7 @@ import org.plumelib.options.Options;
  * into an {@link AScene}.
  */
 public class ClassFileReader {
-  public static final String INDEX_UTILS_VERSION = "Annotation File Utilities v3.32.0-eisop1";
+  public static final String INDEX_UTILS_VERSION = "Annotation File Utilities v3.34.0-eisop1";
 
   @Option("-b omit annotations from bridge (compiler-created) methods")
   public static boolean ignore_bridge_methods = false;
