@@ -14,7 +14,7 @@ pr:
 
 # Each *_jdkX job depends on build_without_test_jdkX.
 # Each jdk8 and jdk11 job depends on canary-jobs (all jdk17 jobs).
-# Each jdk8, jdk11, and jdk-latest job depends on the corresponding jdk17 job.
+# Each jdk8, jdk11, and jdk21 job depends on the corresponding jdk17 job.
 
 jobs:
 

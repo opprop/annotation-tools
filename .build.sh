@@ -35,7 +35,7 @@ export SHELLOPTS
 set -e
 
 if [ -d "/tmp/plume-scripts" ] ; then
-  (cd /tmp/plume-scripts && git pull -q) > /dev/null 2>&1
+  (cd /tmp/plume-scripts && (git pull -q || true)) > /dev/null 2>&1
 else
   (cd /tmp && git clone --depth 1 -q https://github.com/plume-lib/plume-scripts.git)
 fi
@@ -77,7 +77,7 @@ if [[ "${GROUP}" == "downstream" || "${GROUP}" == "all" ]]; then
     # checker-framework and its downstream tests
 # NO-AFU
 #    /tmp/plume-scripts/git-clone-related eisop checker-framework
-#    (cd ../checker-framework/framework && (../gradlew --write-verification-metadata sha256 help --dry-run || (sleep 60 && ../gradlew --write-verification-metadata sha256 help --dry-run)))
+#    (cd ../checker-framework/framework && (../gradlew --write-verification-metadata sha256 help --dry-run || (sleep 60s && ../gradlew --write-verification-metadata sha256 help --dry-run)))
 #    (cd ../checker-framework/framework && ../gradlew ainferTest)
 
     # /tmp/plume-scripts/git-clone-related eisop checker-framework-inference
