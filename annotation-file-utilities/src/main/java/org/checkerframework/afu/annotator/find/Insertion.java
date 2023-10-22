@@ -256,6 +256,7 @@ public abstract class Insertion {
   /**
    * Removes the leading package.
    *
+   * @param s the string to convert
    * @return given <code>@com.foo.bar(baz)</code> it returns the pair <code>{ com.foo, @bar(baz) }
    *     </code>.
    */
