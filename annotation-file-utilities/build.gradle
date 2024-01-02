@@ -71,10 +71,10 @@ dependencies {
     } else {
         implementation 'org.plumelib:options:2.0.3'
     }
-    implementation 'org.plumelib:plume-util:1.8.1'
+    implementation 'org.plumelib:plume-util:1.9.0'
     implementation 'org.plumelib:reflection-util:1.1.0'
     // Annotations in checker-qual.jar are used, but no checkers are (currently) run on the code.
-    compileOnly 'io.github.eisop:checker-qual:3.34.0-eisop1'
+    compileOnly 'io.github.eisop:checker-qual:3.41.0-eisop1'
     ext.errorproneVersion = '2.23.0'
     implementation "com.google.errorprone:error_prone_annotations:${errorproneVersion}"
     errorprone("com.google.errorprone:error_prone_core:${errorproneVersion}")
@@ -86,7 +86,7 @@ dependencies {
     implementation 'org.ow2.asm:asm:9.6'
 
     testImplementation group: 'junit', name: 'junit', version: '4.13.2'
-    testImplementation 'io.github.eisop:checker-qual:3.34.0-eisop1'
+    testImplementation 'io.github.eisop:checker-qual:3.41.0-eisop1'
 }
 
 tasks.withType(JavaCompile) { compilationTask ->
