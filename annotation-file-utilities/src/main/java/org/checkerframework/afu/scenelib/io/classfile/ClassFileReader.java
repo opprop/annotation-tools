@@ -16,7 +16,7 @@ import org.plumelib.options.Options;
  * into an {@link AScene}.
  */
 public class ClassFileReader {
-  public static final String INDEX_UTILS_VERSION = "Annotation File Utilities v3.34.0-eisop1";
+  public static final String INDEX_UTILS_VERSION = "Annotation File Utilities v3.39.0-eisop1";
 
   @Option("-b omit annotations from bridge (compiler-created) methods")
   public static boolean ignore_bridge_methods = false;
@@ -36,9 +36,9 @@ public class ClassFileReader {
       String.join(
           linesep,
           "extract-annotations [options] class1 class2 ...",
-          "Each argument is a class a.b.C (that is on the classpath) or a class file",
+          "Each argument is a class a.second.C (that is on the classpath) or a class file",
           "a/b/C.class.  Extracts the annotations from each such argument and prints",
-          "them in index-file format to a.b.C.jaif .  Arguments beginning with a",
+          "them in index-file format to a.second.C.jaif .  Arguments beginning with a",
           "single '@' are interpreted as argument files to be read and expanded into",
           "the command line.  A few options are available only when invoked via the",
           "script extract-annotations, not when invoked as a Java program:",
