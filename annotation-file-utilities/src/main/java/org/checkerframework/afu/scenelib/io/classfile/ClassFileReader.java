@@ -16,7 +16,7 @@ import org.plumelib.options.Options;
  * into an {@link AScene}.
  */
 public class ClassFileReader {
-  public static final String INDEX_UTILS_VERSION = "Annotation File Utilities v3.32.0-eisop1";
+  public static final String INDEX_UTILS_VERSION = "Annotation File Utilities v3.34.0-eisop1";
 
   @Option("-b omit annotations from bridge (compiler-created) methods")
   public static boolean ignore_bridge_methods = false;
@@ -132,7 +132,7 @@ public class ClassFileReader {
         System.out.println(e.getMessage());
         e.printStackTrace();
         System.out.println("Please submit a bug report at");
-        System.out.println("  https://github.com/typetools/annotation-tools/issues");
+        System.out.println("  https://github.com/eisop/annotation-tools/issues");
         System.out.println("Be sure to include a copy of the output trace, instructions on how");
         System.out.println("to reproduce this error, and all input files.  Thanks!");
         return;
@@ -198,7 +198,7 @@ public class ClassFileReader {
    */
   public static void read(AScene scene, ClassReader classReader) {
     ClassAnnotationSceneReader ca =
-        new ClassAnnotationSceneReader(Opcodes.ASM7, classReader, scene, ignore_bridge_methods);
+        new ClassAnnotationSceneReader(Opcodes.ASM8, classReader, scene, ignore_bridge_methods);
     classReader.accept(ca, 0);
   }
 }
