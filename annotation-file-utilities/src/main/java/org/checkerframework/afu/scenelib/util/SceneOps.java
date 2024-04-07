@@ -59,12 +59,13 @@ public class SceneOps {
       IndexFileParser.parseFile(args[2], s2);
       AScene diff = diff(s1, s2);
 
-      try (Writer w =
-          new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out, UTF_8)))) {
+      Writer w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out, UTF_8)));
+      try {
         IndexFileWriter.write(diff, w);
       } catch (DefException e) {
         exitWithException(e);
       }
+      w.flush();
     } catch (IOException e) {
       exitWithException(e);
     }
@@ -95,7 +96,12 @@ public class SceneOps {
   public static void testDiffEmpties() {
     assert new AScene().equals(diff(new AScene(), new AScene()));
   }
-  /** Test that X-X=0, for several scenes X. */
+
+  /**
+   * Test that X-X=0, for several scenes X.
+   *
+   * @throws IOException if there is trouble with IO
+   */
   public static void testDiffSame() throws IOException {
     String dirname = "test/annotations/tests/classfile/cases";
     String[] testcases = {

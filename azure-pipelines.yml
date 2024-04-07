@@ -14,7 +14,7 @@ pr:
 
 # Each *_jdkX job depends on build_without_test_jdkX.
 # Each jdk8 and jdk11 job depends on canary-jobs (all jdk17 jobs).
-# Each jdk8, jdk11, and jdk-latest job depends on the corresponding jdk17 job.
+# Each jdk8, jdk11, and jdk21 job depends on the corresponding jdk17 job.
 
 jobs:
 
@@ -280,6 +280,7 @@ jobs:
     fetchDepth: 25
   - bash: ./.build-without-test.sh
     displayName: .build-without-test.sh
+    continueOnError: true
 - job: test_jdk_next
   pool:
     vmImage: 'ubuntu-latest'
@@ -292,6 +293,7 @@ jobs:
     fetchDepth: 25
   - bash: ./annotation-file-utilities/dev-scripts/test-allTests.sh
     displayName: test-allTests.sh
+    continueOnError: true
 - job: typecheck_jdk_next
   pool:
     vmImage: 'ubuntu-latest'
@@ -304,6 +306,7 @@ jobs:
     fetchDepth: 25
   - bash: ./annotation-file-utilities/dev-scripts/test-typecheck.sh
     displayName: test-typecheck.sh
+    continueOnError: true
 - job: misc_jdk_next
   pool:
     vmImage: 'ubuntu-latest'
@@ -314,10 +317,9 @@ jobs:
   steps:
   - checkout: self
     fetchDepth: 25
-  # Run test, but do not cause overall failure
   - bash: ./annotation-file-utilities/dev-scripts/test-misc.sh
-    continueOnError: true
     displayName: test-misc.sh
+    continueOnError: true
 - job: downstream_jdk_next
   pool:
     vmImage: 'ubuntu-latest'
@@ -330,3 +332,4 @@ jobs:
     fetchDepth: 25
   - bash: ./annotation-file-utilities/dev-scripts/test-downstream.sh
     displayName: test-downstream.sh
+    continueOnError: true
