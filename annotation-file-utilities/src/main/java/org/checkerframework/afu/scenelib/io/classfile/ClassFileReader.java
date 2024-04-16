@@ -22,7 +22,7 @@ public class ClassFileReader {
   }
 
   /** The AFU version string. Automatically updated by the release process. */
-  public static final String INDEX_UTILS_VERSION = "Annotation File Utilities v3.40.0-eisop1";
+  public static final String INDEX_UTILS_VERSION = "Annotation File Utilities v3.40.0-eisop2";
 
   /** The {@code ignore_bridge_methods} option. */
   @Option("-b omit annotations from bridge (compiler-created) methods")
