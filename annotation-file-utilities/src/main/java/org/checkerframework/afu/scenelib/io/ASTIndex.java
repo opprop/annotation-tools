@@ -364,6 +364,9 @@ public class ASTIndex extends WrapperMap<Tree, ASTRecord> {
             saveAll(node.getThrows(), rec, kind, ASTPath.THROWS);
             save(node.getBody(), rec, kind, ASTPath.BODY);
             inMethod = outMethod;
+            if (node.getReturnType() == null) { // if the method is constructor
+              return defaultAction(node, rec.extend(kind, ASTPath.TYPE));
+            }
             return defaultAction(node, rec);
           }
 
